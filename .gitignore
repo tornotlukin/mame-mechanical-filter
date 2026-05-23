@@ -1,1 +1,12 @@
 /mamegames.xml
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Downloaded data — regeneratable via `python distill/distill.py -dl`
+lists/catver.ini
