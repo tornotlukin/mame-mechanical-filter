@@ -1,4 +1,4 @@
-/mamegames.xml
+mamegames.xml
 
 # Python
 __pycache__/
@@ -10,3 +10,9 @@ __pycache__/
 
 # Downloaded data — regeneratable via `python distill/distill.py -dl`
 lists/catver.ini
+
+# Distilled ROM output
+/clean
+
+# Generated RetroArch playlists
+*.lpl

@@ -32,6 +32,7 @@ from config import (  # noqa: E402  (sys.path tweak above)
     LISTS_DIR,
 )
 from copier import (  # noqa: E402
+    FAILED_COPIES,
     chd_subfolder_for,
     copy_chd_folder,
     copy_zip,
@@ -196,7 +197,8 @@ def run(args: argparse.Namespace) -> int:
             excluded_counts[hit] = excluded_counts.get(hit, 0) + 1
             continue
 
-        copy_zip(zip_path, dest)
+        if not copy_zip(zip_path, dest):
+            continue
         if args.include_chd:
             sub = chd_subfolder_for(source, name)
             if sub is not None:
@@ -208,6 +210,11 @@ def run(args: argparse.Namespace) -> int:
 
     elapsed = time.perf_counter() - start
     _print_summary(len(zips), copied, excluded_counts, dest, elapsed)
+    if FAILED_COPIES:
+        print()
+        print(f"Failed to copy {len(FAILED_COPIES)} file(s):")
+        for name, reason in FAILED_COPIES:
+            print(f"  {name}  ({reason})")
     return 0
 
 

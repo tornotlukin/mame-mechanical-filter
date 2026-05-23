@@ -12,10 +12,14 @@ Scope rules:
 from __future__ import annotations
 
 import logging
+import os
 import shutil
+import subprocess
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
+
+FAILED_COPIES: list[tuple[str, str]] = []
 
 
 def find_rom_zips(source: Path) -> list[Path]:
@@ -41,10 +45,97 @@ def filesystem_chd_names(source: Path) -> set[str]:
     return names
 
 
-def copy_zip(src: Path, dest_dir: Path) -> None:
-    """Copy a single ROM zip into dest_dir, overwriting if present."""
+_COPY_CHUNK: int = 1024 * 1024  # 1 MiB — safe over SMB; shutil's default readinto path can fail with OSError 22 on some shares.
+
+
+def _chunked_copyfile(src: Path, dst: Path) -> None:
+    """Copy src to dst with an explicit chunked read/write loop.
+
+    Why: shutil.copy2 uses _copyfileobj_readinto with a large memoryview, which
+    raises OSError(22) on some SMB shares for certain file sizes. A plain
+    read()/write() loop avoids the readinto path entirely.
+    """
+    with open(src, "rb") as fsrc, open(dst, "wb") as fdst:
+        while True:
+            buf = fsrc.read(_COPY_CHUNK)
+            if not buf:
+                break
+            fdst.write(buf)
+
+
+def _robocopy_single(src: Path, dest_dir: Path) -> bool:
+    """Fallback: use Windows robocopy for a single file. Returns True on success.
+
+    Robocopy handles SMB quirks (transient OSError 22, retries, large files)
+    better than Python's file IO. Exit codes 0/1 mean success.
+    """
+    if os.name != "nt":
+        return False
+    try:
+        result = subprocess.run(
+            [
+                "robocopy",
+                str(src.parent),
+                str(dest_dir),
+                src.name,
+                "/R:3",
+                "/W:2",
+                "/NP",
+                "/NJH",
+                "/NJS",
+                "/NDL",
+                "/NFL",
+            ],
+            capture_output=True,
+            text=True,
+        )
+    except FileNotFoundError:
+        logger.warning("robocopy not found on PATH; cannot fall back")
+        return False
+    # Robocopy exit codes: 0 = nothing copied (already up-to-date), 1 = files copied.
+    # 2/3 = extra/mismatched but still OK. >=8 = real failure.
+    if result.returncode < 8:
+        return True
+    logger.error("robocopy failed for %s (rc=%d): %s", src.name, result.returncode, result.stdout.strip())
+    return False
+
+
+def copy_zip(src: Path, dest_dir: Path) -> bool:
+    """Copy a single ROM zip into dest_dir. Returns True if dest now has the file.
+
+    Skips when the destination already exists with the same size — makes the
+    distill resumable after a crash without re-reading every file.
+
+    On OSError (common with SMB shares), falls back to Windows robocopy. If
+    that also fails, records the failure and returns False so the caller can
+    continue with the rest of the run instead of aborting.
+    """
     dest_dir.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(src, dest_dir / src.name)
+    dst = dest_dir / src.name
+    try:
+        if dst.exists() and dst.stat().st_size == src.stat().st_size:
+            return True
+    except OSError:
+        pass
+
+    try:
+        _chunked_copyfile(src, dst)
+    except OSError as exc:
+        logger.warning("Python copy failed for %s (%s); falling back to robocopy", src.name, exc)
+        if dst.exists():
+            try:
+                dst.unlink()
+            except OSError:
+                pass
+        if not _robocopy_single(src, dest_dir):
+            FAILED_COPIES.append((src.name, str(exc)))
+            return False
+    else:
+        try:
+            shutil.copystat(src, dst)
+        except OSError as exc:
+            logger.debug("copystat failed for %s: %s", dst, exc)
+    return True
 
 
 def copy_chd_folder(src_folder: Path, dest_dir: Path) -> None:
