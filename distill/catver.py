@@ -19,6 +19,8 @@ from pathlib import Path
 from config import (
     CATVER_FRUIT_SUBSTRINGS,
     CATVER_PREFIX_CASINO,
+    CATVER_PREFIX_COMPUTER,
+    CATVER_PREFIX_CONSOLE,
     CATVER_PREFIX_ELECTROMECHANICAL,
 )
 
@@ -93,3 +95,34 @@ def casino_names(catver: dict[str, str]) -> set[str]:
 def fruit_names(catver: dict[str, str]) -> set[str]:
     """Names matching the configured 'fruit' substrings."""
     return names_matching_any_substring(catver, CATVER_FRUIT_SUBSTRINGS)
+
+
+def computer_names(catver: dict[str, str]) -> set[str]:
+    """Names categorized as Computer or Computer / *.
+
+    Matches both the bare "Computer" category and its subcategories like
+    "Computer / Workstation - Server". Also covers "Computer Graphic
+    Workstation" which catver lists as its own top-level category.
+    """
+    return {
+        name
+        for name, cat in catver.items()
+        if cat == CATVER_PREFIX_COMPUTER
+        or cat.startswith(f"{CATVER_PREFIX_COMPUTER} / ")
+        or cat.startswith("Computer Graphic Workstation")
+    }
+
+
+def console_names(catver: dict[str, str]) -> set[str]:
+    """Names categorized as Game Console or Game Console / *.
+
+    Also includes the hybrid "Game Console/Computer" category (e.g. Atari
+    5200, ColecoVision) since those are home systems either way.
+    """
+    return {
+        name
+        for name, cat in catver.items()
+        if cat == CATVER_PREFIX_CONSOLE
+        or cat.startswith(f"{CATVER_PREFIX_CONSOLE} / ")
+        or cat.startswith(f"{CATVER_PREFIX_CONSOLE}/")
+    }

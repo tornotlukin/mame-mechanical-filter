@@ -20,7 +20,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from config import (  # noqa: E402  (sys.path tweak above)
+    CATEGORY_BIOS,
     CATEGORY_CHD,
+    CATEGORY_COMPUTER,
+    CATEGORY_CONSOLE,
     CATEGORY_FRUIT,
     CATEGORY_GAMBLING,
     CATEGORY_MECHANICAL,
@@ -105,6 +108,40 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Do not exclude NAOMI/Dreamcast ROMs.",
     )
     p.add_argument(
+        "--keep-computer",
+        action="store_true",
+        help="Do not exclude home computer ROMs (catver 'Computer / *').",
+    )
+    p.add_argument(
+        "--keep-console",
+        action="store_true",
+        help="Do not exclude home console ROMs (catver 'Game Console / *').",
+    )
+    p.add_argument(
+        "--exclude-bios",
+        action="store_true",
+        help=(
+            "Exclude BIOS ROMs. By default BIOSes are always copied even "
+            "when they also match another exclusion category (e.g. qsound "
+            "is flagged nonrunnable but required by CPS-2 games)."
+        ),
+    )
+    p.add_argument(
+        "--prune",
+        action="store_true",
+        help=(
+            "DELETE files in --source that match active exclusions, instead "
+            "of copying. Use this to clean a previously-distilled folder "
+            "after the filter rules change. Defaults to dry-run; pass --yes "
+            "to actually delete."
+        ),
+    )
+    p.add_argument(
+        "--yes",
+        action="store_true",
+        help="Confirm destructive prune deletions. Required alongside --prune.",
+    )
+    p.add_argument(
         "-v", "--verbose", action="store_true", help="Enable debug logging."
     )
     return p
@@ -119,8 +156,12 @@ def _active_categories(args: argparse.Namespace) -> list[str]:
         CATEGORY_TOUCH: args.keep_touch,
         CATEGORY_NONRUNNABLE: args.keep_nonrunnable,
         CATEGORY_NAOMI: args.keep_naomi,
+        CATEGORY_COMPUTER: args.keep_computer,
+        CATEGORY_CONSOLE: args.keep_console,
     }
     active = [cat for cat in DEFAULT_EXCLUDED_CATEGORIES if not keep_map.get(cat, False)]
+    if args.exclude_bios:
+        active.append(CATEGORY_BIOS)
     return active
 
 
@@ -147,6 +188,75 @@ def _print_summary(
     print(f"Done in {elapsed:.1f}s.")
 
 
+def _print_prune_summary(
+    total: int,
+    excluded_counts: dict[str, int],
+    deleted: int,
+    dry_run: bool,
+    source: Path,
+    elapsed: float,
+) -> None:
+    print()
+    print(f"Scanned {total} ROMs in {source}.")
+    if excluded_counts:
+        action = "Would delete" if dry_run else "Deleted"
+        print(f"{action}:")
+        width = max(len(c) for c in excluded_counts)
+        for cat in sorted(excluded_counts):
+            print(f"  {cat:<{width}}  {excluded_counts[cat]}")
+        print("  " + "-" * (width + 6))
+        total_action = sum(excluded_counts.values())
+        print(f"  {'total':<{width}}  {total_action}")
+    if dry_run:
+        print()
+        print("Dry-run only. Re-run with --yes to actually delete.")
+    else:
+        print(f"Deleted {deleted} files.")
+    print(f"Done in {elapsed:.1f}s.")
+
+
+def _run_prune(args: argparse.Namespace, source: Path) -> int:
+    """Walk ``source`` and delete (or list) ROMs matching active exclusions."""
+    active = _active_categories(args)
+    logger.info("Active exclusions: %s", ", ".join(active) if active else "(none)")
+    logger.info("Source: %s", source)
+    logger.info("Mode:   %s", "DELETE" if args.yes else "dry-run")
+
+    exclusion_sets = build_exclusion_sets(source)
+    chd_set = exclusion_sets[CATEGORY_CHD]
+
+    start = time.perf_counter()
+    zips = find_rom_zips(source)
+    excluded_counts: dict[str, int] = {}
+    deleted = 0
+
+    for zip_path in zips:
+        name = zip_path.stem
+
+        hit: str | None = None
+        if name in chd_set and not args.include_chd:
+            hit = CATEGORY_CHD
+        else:
+            hit = classify(name, exclusion_sets, set(active))
+
+        if hit is None:
+            continue
+
+        excluded_counts[hit] = excluded_counts.get(hit, 0) + 1
+        if args.yes:
+            try:
+                zip_path.unlink()
+                deleted += 1
+            except OSError as exc:
+                logger.error("Failed to delete %s: %s", zip_path, exc)
+
+    elapsed = time.perf_counter() - start
+    _print_prune_summary(
+        len(zips), excluded_counts, deleted, not args.yes, source, elapsed
+    )
+    return 0
+
+
 def run(args: argparse.Namespace) -> int:
     if args.download:
         try:
@@ -161,6 +271,12 @@ def run(args: argparse.Namespace) -> int:
     if not source.is_dir():
         logger.error("Source folder does not exist: %s", source)
         return 2
+
+    if args.prune:
+        if args.dest is not None:
+            logger.error("--dest is incompatible with --prune (prune operates on --source).")
+            return 2
+        return _run_prune(args, source)
 
     dest = _resolve_dest(source, args.dest).resolve()
     if dest == source:

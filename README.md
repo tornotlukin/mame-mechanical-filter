@@ -27,7 +27,13 @@ Walks a folder of MAME ROM zips and copies a filtered subset to a destination, d
 | `touch` | `lists/touch_only.xml` | Touchscreen-only games, unusable without a touchscreen. |
 | `nonrunnable` | `lists/nonrunnable_only.xml` | Machines MAME flags `runnable="no"`. |
 | `naomi` | `lists/naomi_only.xml` | NAOMI / Dreamcast ROMs — these belong to a different core. |
+| `computer` | catver `Computer / *` and `Computer Graphic Workstation` | Home computers (Apple II, C64, Atari ST, etc.) — not arcade games. |
+| `console` | catver `Game Console / *` and `Game Console/Computer` | Home consoles (NES, SNES, Genesis, etc.) — belong in their own emulator. |
 | `chd` | `lists/chd_only.xml` + filesystem scan | CHD-requiring games. Skipped unless `-chd` is passed (then the `.zip` and its sibling `.chd` folder are treated as a unit). |
+
+### BIOS preservation
+
+ROMs flagged `isbios="yes"` in MAME's XML (e.g. `neogeo.zip`, `decocass.zip`, `naomi.zip`, `pgm.zip`) are **always copied** even when they also match another exclusion category. This prevents the `nonrunnable` filter from accidentally dropping a BIOS that arcade games depend on. The BIOS list lives in `lists/bios_only.xml`; regenerate it with `python distill/build_lists.py --xml lpl-builder/mamegames.xml` after MAME updates. Pass `--exclude-bios` to opt out of preservation.
 
 ### Usage
 
@@ -49,6 +55,11 @@ python distill/distill.py --source X:\Arcade\roms\MAME287_ROMS --dest ./clean
 | `--keep-touch` | Don't exclude touchscreen games. |
 | `--keep-nonrunnable` | Don't exclude `runnable=no` machines. |
 | `--keep-naomi` | Don't exclude NAOMI / Dreamcast ROMs. |
+| `--keep-computer` | Don't exclude home computer ROMs. |
+| `--keep-console` | Don't exclude home console ROMs. |
+| `--exclude-bios` | Drop the BIOS-preservation override; BIOSes can then be filtered by any active category. |
+| `--prune` | Destructive mode: walk `--source` and DELETE files that match active exclusions, instead of copying. Use after the filter rules change to clean a previously-distilled folder. Defaults to dry-run; pair with `--yes` to actually delete. `--dest` is rejected in this mode. |
+| `--yes` | Confirm destructive prune deletions. Required alongside `--prune`. |
 | `-v`, `--verbose` | Debug logging. |
 
 ### Behaviour notes
@@ -56,6 +67,17 @@ python distill/distill.py --source X:\Arcade\roms\MAME287_ROMS --dest ./clean
 - **Source is never modified.** Files are copied with `shutil` (or `robocopy` on Windows when the network share misbehaves). The original folder is read-only as far as the script is concerned.
 - **Resumable.** If a destination file already exists with the same size, it's skipped — so re-running after a crash or interruption picks up where it left off without re-reading hundreds of GB.
 - **SMB-tolerant.** Reads use a chunked loop instead of `shutil.copy2`'s `readinto` path (which throws `OSError 22` on some shares). When even that fails, the copy falls back to Windows `robocopy`. If both fail for a specific file it's logged in the final summary and the run continues instead of aborting.
+
+### Pruning an existing distilled folder
+
+When filter rules change (e.g. you add `computer`/`console` exclusions after an earlier distill), `/clean` won't auto-update — distill only copies, it doesn't delete. Use `--prune` to clean it up in place:
+
+```
+python distill/distill.py --source ./clean --prune          # dry-run, shows counts
+python distill/distill.py --source ./clean --prune --yes    # actually delete
+```
+
+Source folders at the real ROM location (e.g. `X:\Arcade\roms\...`) are never touched by anything else — `--prune` only deletes from whatever you pass as `--source`.
 
 ### Layout
 
@@ -68,6 +90,7 @@ distill/
   exclusions.py    # build per-category exclusion sets, classify a ROM
   copier.py        # enumerate ROMs, copy zips + CHD subfolders
   downloader.py    # fetch latest catver.ini from progettoSNAPS
+  build_lists.py   # regenerate lists/bios_only.xml from mamegames.xml
 ```
 
 ---
@@ -157,11 +180,12 @@ If you pass `--device-prefix "/storage/emulated/0/..."` from Git Bash on Windows
 
 1. Download the latest catver once: `python distill/distill.py -dl`
 2. Generate MAME's XML once: `H:\mame\mame.exe -listxml > lpl-builder\mamegames.xml`
-3. Distill the romset: `python distill/distill.py --source X:\Arcade\roms\MAME287_ROMS --dest ./clean`
-4. Build the playlist: `python lpl-builder/build.py --source ./clean --device-prefix "/storage/emulated/0/RetroArch/roms/mame"`
-5. Copy `./clean/` to the device's MAME ROM folder; copy `lpl-builder/MAME.lpl` to the device's `playlists/` folder.
+3. Regenerate the BIOS list once: `python distill/build_lists.py --xml lpl-builder/mamegames.xml`
+4. Distill the romset: `python distill/distill.py --source X:\Arcade\roms\MAME287_ROMS --dest ./clean`
+5. Build the playlist: `python lpl-builder/build.py --source ./clean --device-prefix "/storage/emulated/0/RetroArch/roms/mame"`
+6. Copy `./clean/` to the device's MAME ROM folder; copy `lpl-builder/MAME.lpl` to the device's `playlists/` folder.
 
-Re-run any stage in isolation when the inputs change — they're independent.
+Re-run any stage in isolation when the inputs change — they're independent. If filter rules change after an initial distill, prune the existing output: `python distill/distill.py --source ./clean --prune --yes`.
 
 ---
 

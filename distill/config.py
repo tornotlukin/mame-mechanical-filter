@@ -17,6 +17,7 @@ NONRUNNABLE_XML: str = "nonrunnable_only.xml"
 NAOMI_XML: str = "naomi_only.xml"
 CHD_XML: str = "chd_only.xml"
 CHD_TXT: str = "chdlist.txt"
+BIOS_XML: str = "bios_only.xml"
 
 CATVER_INDEX_URL: str = "https://www.progettosnaps.net/catver/"
 CATVER_DOWNLOAD_URL: str = (
@@ -25,6 +26,8 @@ CATVER_DOWNLOAD_URL: str = (
 
 CATVER_PREFIX_ELECTROMECHANICAL: str = "Electromechanical"
 CATVER_PREFIX_CASINO: str = "Casino"
+CATVER_PREFIX_COMPUTER: str = "Computer"
+CATVER_PREFIX_CONSOLE: str = "Game Console"
 CATVER_FRUIT_SUBSTRINGS: tuple[str, ...] = (
     "Casino / Slot Machine",
     "Electromechanical / Reels",
@@ -39,6 +42,11 @@ CATEGORY_TOUCH: str = "touch"
 CATEGORY_NONRUNNABLE: str = "nonrunnable"
 CATEGORY_NAOMI: str = "naomi"
 CATEGORY_CHD: str = "chd"
+CATEGORY_COMPUTER: str = "computer"
+CATEGORY_CONSOLE: str = "console"
+# Special "preservation" category: ROMs in this set are always copied,
+# overriding any other exclusion. Use --exclude-bios to opt out.
+CATEGORY_BIOS: str = "bios"
 
 DEFAULT_EXCLUDED_CATEGORIES: tuple[str, ...] = (
     CATEGORY_MECHANICAL,
@@ -47,4 +55,6 @@ DEFAULT_EXCLUDED_CATEGORIES: tuple[str, ...] = (
     CATEGORY_TOUCH,
     CATEGORY_NONRUNNABLE,
     CATEGORY_NAOMI,
+    CATEGORY_COMPUTER,
+    CATEGORY_CONSOLE,
 )

@@ -10,9 +10,20 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
-from catver import casino_names, electromechanical_names, fruit_names, parse_catver
+from catver import (
+    casino_names,
+    computer_names,
+    console_names,
+    electromechanical_names,
+    fruit_names,
+    parse_catver,
+)
 from config import (
+    BIOS_XML,
+    CATEGORY_BIOS,
     CATEGORY_CHD,
+    CATEGORY_COMPUTER,
+    CATEGORY_CONSOLE,
     CATEGORY_FRUIT,
     CATEGORY_GAMBLING,
     CATEGORY_MECHANICAL,
@@ -51,6 +62,8 @@ def build_exclusion_sets(source: Path) -> dict[str, set[str]]:
     txt_chd = load_machine_names_txt(LISTS_DIR / CHD_TXT)
     fs_chd = filesystem_chd_names(source) if source.is_dir() else set()
 
+    xml_bios = load_machine_names_xml(LISTS_DIR / BIOS_XML)
+
     return {
         CATEGORY_MECHANICAL: xml_mech | electromechanical_names(catver),
         CATEGORY_FRUIT: fruit_names(catver),
@@ -59,6 +72,9 @@ def build_exclusion_sets(source: Path) -> dict[str, set[str]]:
         CATEGORY_NONRUNNABLE: xml_nonrun,
         CATEGORY_NAOMI: xml_naomi,
         CATEGORY_CHD: xml_chd | txt_chd | fs_chd,
+        CATEGORY_COMPUTER: computer_names(catver),
+        CATEGORY_CONSOLE: console_names(catver),
+        CATEGORY_BIOS: xml_bios,
     }
 
 
@@ -67,10 +83,17 @@ def classify(
 ) -> str | None:
     """Return the first active category that contains `name`, else None.
 
+    BIOSes are preserved: if `name` is in the BIOS set and CATEGORY_BIOS is
+    not active (i.e. `--exclude-bios` was not passed), the ROM passes through
+    even when it also matches another active exclusion category.
+
     Iteration order is the active-categories set order — for tally purposes
     we want a stable category attribution; the caller passes a list to control
     priority.
     """
+    bios_set = exclusion_sets.get(CATEGORY_BIOS, set())
+    if name in bios_set and CATEGORY_BIOS not in active_categories:
+        return None
     for cat in active_categories:
         if name in exclusion_sets.get(cat, set()):
             return cat
