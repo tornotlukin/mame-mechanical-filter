@@ -159,6 +159,11 @@ A single `MAME.lpl` JSON file. Top-level shape:
 
 `core_path` / `core_name` are `"DETECT"` so RetroArch picks the active MAME core at runtime — portable across Play Store, sideload, and aarch64 builds. `db_name` is `"MAME.lpl"` so existing thumbnail packs at `thumbnails/MAME/Named_Boxarts/...` match without extra work.
 
+The top-level `default_core_path` and `default_core_name` are emitted as empty strings. If you'd rather hard-bind every entry to a specific core instead of relying on `DETECT`, fill them in by hand after the tool runs:
+
+- **`default_core_path`** — the full filesystem path to the core's `.so` on the target device. There is no portable answer: Android handhelds (Retroid, Anbernic, phones) usually hide the OS root filesystem from the file picker, so you may have to dig in RetroArch's own UI to discover the actual install path. In RetroArch on the device: Settings → Directory → Cores will show you the directory; the `.so` filename you want is whatever shows up under Online Updater → Core Downloader → MAME. Common shapes look like `/data/data/com.retroarch.aarch64/cores/mame_libretro_android.so`, but the exact path depends on which RetroArch build (Play Store / aarch64 / sideload) is installed and may not be reachable through the system file manager.
+- **`default_core_name`** — the human-readable core label. For recent MAME builds this is typically `"Arcade (MAME/Arcade)"`. Older or alternate cores use different strings (e.g. `"Arcade (MAME 2003-Plus)"`); check Settings → Core in RetroArch to read off the exact name.
+
 ### Layout
 
 ```
