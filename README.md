@@ -206,6 +206,8 @@ python lpl-builder/build.py --source ./clean --device-prefix "/storage/emulated/
 | `--source PATH` | Folder of ROM `.zip` files to enumerate. Required. |
 | `--xml PATH` | Path to MAME `-listxml` output. Default: `lpl-builder/mamegames.xml`. |
 | `--device-prefix STR` | Path prefix written into each item's `path` field, joined with forward slashes. Use the Android (or other target) ROM path. When unset, the actual PC path of each ROM is used — handy for testing on desktop RetroArch. |
+| `--core-path STR` | Bind every entry to a specific core's `.so`. Sets each item's `core_path` **and** the top-level `default_core_path`. Example: `/data/user/0/com.retroarch.aarch64/cores/mamearcade_libretro_android.so`. When unset, `DETECT` is used and RetroArch picks the core at runtime. |
+| `--core-name STR` | Human-readable core label paired with `--core-path`. Sets each item's `core_name` **and** the top-level `default_core_name`. Example: `Arcade (MAME/Arcade)`. |
 | `--output PATH`, `-o` | Where to write the `.lpl`. Default: `lpl-builder/MAME.lpl`. |
 | `-v`, `--verbose` | Debug logging. |
 
@@ -238,10 +240,16 @@ A single `MAME.lpl` JSON file. Top-level shape:
 
 `core_path` / `core_name` are `"DETECT"` so RetroArch picks the active MAME core at runtime — portable across Play Store, sideload, and aarch64 builds. `db_name` is `"MAME.lpl"` so existing thumbnail packs at `thumbnails/MAME/Named_Boxarts/...` match without extra work.
 
-The top-level `default_core_path` and `default_core_name` are emitted as empty strings. If you'd rather hard-bind every entry to a specific core instead of relying on `DETECT`, fill them in by hand after the tool runs:
+By default `core_path`/`core_name` are `DETECT` and the top-level `default_core_*` are empty. To hard-bind every entry to a specific core instead, pass `--core-path` and `--core-name` — they populate both the per-item fields and the top-level defaults. Finding the right values on a device:
 
-- **`default_core_path`** — the full filesystem path to the core's `.so` on the target device. There is no portable answer: Android handhelds (Retroid, Anbernic, phones) usually hide the OS root filesystem from the file picker, so you may have to dig in RetroArch's own UI to discover the actual install path. In RetroArch on the device: Settings → Directory → Cores will show you the directory; the `.so` filename you want is whatever shows up under Online Updater → Core Downloader → MAME. Common shapes look like `/data/data/com.retroarch.aarch64/cores/mame_libretro_android.so`, but the exact path depends on which RetroArch build (Play Store / aarch64 / sideload) is installed and may not be reachable through the system file manager.
-- **`default_core_name`** — the human-readable core label. For recent MAME builds this is typically `"Arcade (MAME/Arcade)"`. Older or alternate cores use different strings (e.g. `"Arcade (MAME 2003-Plus)"`); check Settings → Core in RetroArch to read off the exact name.
+- **core path** — the full filesystem path to the core's `.so` on the target device. There is no portable answer: Android handhelds (Retroid, Anbernic, phones) usually hide the OS root filesystem from the file picker, so you may have to dig in RetroArch's own UI to discover the actual install path. In RetroArch on the device: Settings → Directory → Cores shows the directory; the `.so` filename is whatever appears under Online Updater → Core Downloader → MAME. Common shapes look like `/data/user/0/com.retroarch.aarch64/cores/mamearcade_libretro_android.so`, but the exact path depends on which RetroArch build (Play Store / aarch64 / sideload) is installed.
+- **core name** — the human-readable core label. For recent MAME builds this is typically `Arcade (MAME/Arcade)`. Older or alternate cores use different strings (e.g. `Arcade (MAME 2003-Plus)`); check Settings → Core in RetroArch to read off the exact name.
+
+Example binding both:
+
+```
+python lpl-builder/build.py --source ./clean --device-prefix "/storage/1031-8B0C/mame" --core-path "/data/user/0/com.retroarch.aarch64/cores/mamearcade_libretro_android.so" --core-name "Arcade (MAME/Arcade)"
+```
 
 ### Layout
 

@@ -40,24 +40,39 @@ def build_item(
     label: str,
     source: Path,
     device_prefix: str | None,
+    core_path: str = CORE_DETECT,
+    core_name: str = CORE_DETECT,
 ) -> dict[str, str]:
-    """Build a single playlist entry."""
+    """Build a single playlist entry.
+
+    ``core_path``/``core_name`` default to ``"DETECT"`` (RetroArch picks the
+    active core at runtime). Pass explicit values to hard-bind every entry to a
+    specific core's ``.so``.
+    """
     return {
         "path": build_path(f"{rom_stem}{ROM_EXTENSION}", source, device_prefix),
         "label": label,
-        "core_path": CORE_DETECT,
-        "core_name": CORE_DETECT,
+        "core_path": core_path,
+        "core_name": core_name,
         "crc32": CRC32_PLACEHOLDER,
         "db_name": PLAYLIST_DB_NAME,
     }
 
 
-def build_playlist(items: list[dict[str, str]]) -> dict[str, object]:
-    """Return the top-level playlist dict, ordered as RetroArch writes it."""
+def build_playlist(
+    items: list[dict[str, str]],
+    default_core_path: str = "",
+    default_core_name: str = "",
+) -> dict[str, object]:
+    """Return the top-level playlist dict, ordered as RetroArch writes it.
+
+    ``default_core_path``/``default_core_name`` are written verbatim; leave
+    them empty (the default) for a ``DETECT`` playlist.
+    """
     return {
         "version": PLAYLIST_VERSION,
-        "default_core_path": "",
-        "default_core_name": "",
+        "default_core_path": default_core_path,
+        "default_core_name": default_core_name,
         "label_display_mode": 0,
         "right_thumbnail_mode": 0,
         "left_thumbnail_mode": 0,

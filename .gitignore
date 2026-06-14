@@ -16,3 +16,6 @@ lists/catver.ini
 
 # Generated RetroArch playlists
 *.lpl
+
+# Run logs
+*.log

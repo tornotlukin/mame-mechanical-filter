@@ -24,6 +24,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from config import (  # noqa: E402  (sys.path tweak above)
+    CORE_DETECT,
     DEFAULT_OUTPUT_FILENAME,
     DEFAULT_XML_FILENAME,
     PACKAGE_ROOT,
@@ -73,6 +74,28 @@ def _build_parser() -> argparse.ArgumentParser:
         ),
     )
     p.add_argument(
+        "--core-path",
+        type=str,
+        default=None,
+        help=(
+            "Bind every entry to a specific core's .so. Sets each item's "
+            "`core_path` and the top-level `default_core_path`. Example: "
+            "`/data/user/0/com.retroarch.aarch64/cores/"
+            "mamearcade_libretro_android.so`. When unset, `DETECT` is used "
+            "and RetroArch picks the core at runtime."
+        ),
+    )
+    p.add_argument(
+        "--core-name",
+        type=str,
+        default=None,
+        help=(
+            "Human-readable core label paired with --core-path. Sets each "
+            "item's `core_name` and the top-level `default_core_name`. "
+            'Example: `Arcade (MAME/Arcade)`.'
+        ),
+    )
+    p.add_argument(
         "--output",
         "-o",
         type=Path,
@@ -114,11 +137,26 @@ def run(args: argparse.Namespace) -> int:
 
     output: Path = _resolve_output(args.output)
 
+    if (args.core_path is None) != (args.core_name is None):
+        logger.warning(
+            "--core-path and --core-name are normally set together so the "
+            "playlist's core_path and core_name match."
+        )
+
+    # Per-item core fields default to DETECT; top-level defaults stay empty
+    # unless the caller binds a specific core.
+    item_core_path = args.core_path if args.core_path is not None else CORE_DETECT
+    item_core_name = args.core_name if args.core_name is not None else CORE_DETECT
+    default_core_path = args.core_path or ""
+    default_core_name = args.core_name or ""
+
     rom_stems = _enumerate_roms(source)
     if not rom_stems:
         logger.error("No %s files found in %s", ROM_EXTENSION, source)
         return 2
     logger.info("Found %d ROMs in %s", len(rom_stems), source)
+    if args.core_path is not None:
+        logger.info("Binding core: %s (%s)", item_core_name, item_core_path)
 
     logger.info("Reading descriptions from %s", xml_path)
     descriptions = load_descriptions(xml_path, set(rom_stems))
@@ -135,9 +173,18 @@ def run(args: argparse.Namespace) -> int:
         if label is None:
             missing.append(stem)
             label = stem
-        items.append(build_item(stem, label, source, args.device_prefix))
+        items.append(
+            build_item(
+                stem,
+                label,
+                source,
+                args.device_prefix,
+                core_path=item_core_path,
+                core_name=item_core_name,
+            )
+        )
 
-    playlist = build_playlist(items)
+    playlist = build_playlist(items, default_core_path, default_core_name)
     write_playlist(playlist, output)
 
     logger.info("Wrote %d items to %s", len(items), output)
