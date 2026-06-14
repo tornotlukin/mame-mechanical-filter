@@ -24,15 +24,18 @@ from config import (  # noqa: E402  (sys.path tweak above)
     CATEGORY_CHD,
     CATEGORY_COMPUTER,
     CATEGORY_CONSOLE,
+    CATEGORY_DEVICE,
     CATEGORY_FRUIT,
     CATEGORY_GAMBLING,
     CATEGORY_MECHANICAL,
     CATEGORY_NAOMI,
-    CATEGORY_NONRUNNABLE,
     CATEGORY_TOUCH,
     DEFAULT_DEST_SUBDIR,
     DEFAULT_EXCLUDED_CATEGORIES,
     LISTS_DIR,
+    SET_TYPE_AUTO,
+    SET_TYPE_SPLIT,
+    SET_TYPES,
 )
 from copier import (  # noqa: E402
     FAILED_COPIES,
@@ -43,6 +46,7 @@ from copier import (  # noqa: E402
 )
 from downloader import download_latest_catver  # noqa: E402
 from exclusions import build_exclusion_sets, classify  # noqa: E402
+from romset import detect_set_type, load_clone_map, parent_closure  # noqa: E402
 
 logger = logging.getLogger("distill")
 
@@ -52,8 +56,9 @@ def _build_parser() -> argparse.ArgumentParser:
         prog="distill",
         description=(
             "Copy a MAME ROM folder to a destination, excluding mechanical, "
-            "fruit, gambling, touchscreen, nonrunnable, and NAOMI/Dreamcast "
-            "games by default."
+            "fruit, gambling, touchscreen, computer, console, and "
+            "NAOMI/Dreamcast games by default. BIOS and device ROMs are "
+            "preserved."
         ),
     )
     p.add_argument(
@@ -98,11 +103,6 @@ def _build_parser() -> argparse.ArgumentParser:
         "--keep-touch", action="store_true", help="Do not exclude touchscreen games."
     )
     p.add_argument(
-        "--keep-nonrunnable",
-        action="store_true",
-        help="Do not exclude machines MAME marks runnable=no.",
-    )
-    p.add_argument(
         "--keep-naomi",
         action="store_true",
         help="Do not exclude NAOMI/Dreamcast ROMs.",
@@ -122,8 +122,28 @@ def _build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help=(
             "Exclude BIOS ROMs. By default BIOSes are always copied even "
-            "when they also match another exclusion category (e.g. qsound "
-            "is flagged nonrunnable but required by CPS-2 games)."
+            "when they also match another exclusion category (e.g. neogeo "
+            "is required by every Neo Geo game)."
+        ),
+    )
+    p.add_argument(
+        "--exclude-devices",
+        action="store_true",
+        help=(
+            "Exclude device ROMs. By default ROM-bearing devices are always "
+            "copied (e.g. qsound is required by CPS-2 games). Dropping them "
+            "breaks games in merged/split sets."
+        ),
+    )
+    p.add_argument(
+        "--set-type",
+        choices=SET_TYPES,
+        default=SET_TYPE_AUTO,
+        help=(
+            "Romset pack type. 'split' pulls each kept clone's parent zip "
+            "along with it (and protects parents from prune). 'merged' and "
+            "'non-merged' need no parent handling. 'auto' (default) detects "
+            "merged vs split from the source folder."
         ),
     )
     p.add_argument(
@@ -154,7 +174,6 @@ def _active_categories(args: argparse.Namespace) -> list[str]:
         CATEGORY_FRUIT: args.keep_fruit,
         CATEGORY_GAMBLING: args.keep_gambling,
         CATEGORY_TOUCH: args.keep_touch,
-        CATEGORY_NONRUNNABLE: args.keep_nonrunnable,
         CATEGORY_NAOMI: args.keep_naomi,
         CATEGORY_COMPUTER: args.keep_computer,
         CATEGORY_CONSOLE: args.keep_console,
@@ -162,11 +181,24 @@ def _active_categories(args: argparse.Namespace) -> list[str]:
     active = [cat for cat in DEFAULT_EXCLUDED_CATEGORIES if not keep_map.get(cat, False)]
     if args.exclude_bios:
         active.append(CATEGORY_BIOS)
+    if args.exclude_devices:
+        active.append(CATEGORY_DEVICE)
     return active
 
 
 def _resolve_dest(source: Path, dest: Path | None) -> Path:
     return dest if dest is not None else source / DEFAULT_DEST_SUBDIR
+
+
+def _resolve_set_type(
+    requested: str, source: Path, clone_map: dict[str, str]
+) -> str:
+    """Return the effective set type, auto-detecting when requested == 'auto'."""
+    if requested != SET_TYPE_AUTO:
+        return requested
+    detected = detect_set_type(source, clone_map)
+    logger.info("Auto-detected romset type: %s", detected)
+    return detected
 
 
 def _print_summary(
@@ -218,7 +250,10 @@ def _print_prune_summary(
 def _run_prune(args: argparse.Namespace, source: Path) -> int:
     """Walk ``source`` and delete (or list) ROMs matching active exclusions."""
     active = _active_categories(args)
+    clone_map = load_clone_map()
+    set_type = _resolve_set_type(args.set_type, source, clone_map)
     logger.info("Active exclusions: %s", ", ".join(active) if active else "(none)")
+    logger.info("Set type: %s", set_type)
     logger.info("Source: %s", source)
     logger.info("Mode:   %s", "DELETE" if args.yes else "dry-run")
 
@@ -227,21 +262,34 @@ def _run_prune(args: argparse.Namespace, source: Path) -> int:
 
     start = time.perf_counter()
     zips = find_rom_zips(source)
-    excluded_counts: dict[str, int] = {}
-    deleted = 0
 
+    # Pass 1: classify every zip into kept vs excluded(category).
+    kept: set[str] = set()
+    flagged: list[tuple[Path, str]] = []
     for zip_path in zips:
         name = zip_path.stem
-
-        hit: str | None = None
         if name in chd_set and not args.include_chd:
-            hit = CATEGORY_CHD
-        else:
-            hit = classify(name, exclusion_sets, set(active))
-
-        if hit is None:
+            flagged.append((zip_path, CATEGORY_CHD))
             continue
+        hit = classify(name, exclusion_sets, set(active))
+        if hit is None:
+            kept.add(name)
+        else:
+            flagged.append((zip_path, hit))
 
+    # Split sets: protect parents that kept clones still depend on, so pruning
+    # an excluded parent doesn't break a kept clone.
+    protected: set[str] = (
+        parent_closure(kept, clone_map) if set_type == SET_TYPE_SPLIT else set()
+    )
+
+    excluded_counts: dict[str, int] = {}
+    deleted = 0
+    protected_kept = 0
+    for zip_path, hit in flagged:
+        if zip_path.stem in protected:
+            protected_kept += 1
+            continue
         excluded_counts[hit] = excluded_counts.get(hit, 0) + 1
         if args.yes:
             try:
@@ -254,6 +302,8 @@ def _run_prune(args: argparse.Namespace, source: Path) -> int:
     _print_prune_summary(
         len(zips), excluded_counts, deleted, not args.yes, source, elapsed
     )
+    if protected_kept:
+        print(f"Kept {protected_kept} excluded parent(s) needed by split-set clones.")
     return 0
 
 
@@ -284,7 +334,10 @@ def run(args: argparse.Namespace) -> int:
         return 2
 
     active = _active_categories(args)
+    clone_map = load_clone_map()
+    set_type = _resolve_set_type(args.set_type, source, clone_map)
     logger.info("Active exclusions: %s", ", ".join(active) if active else "(none)")
+    logger.info("Set type: %s", set_type)
     logger.info("Source: %s", source)
     logger.info("Dest:   %s", dest)
 
@@ -296,6 +349,8 @@ def run(args: argparse.Namespace) -> int:
     excluded_counts: dict[str, int] = {}
     copied = 0
     chd_skipped = 0
+    kept: set[str] = set()
+    name_to_path: dict[str, Path] = {}
 
     for zip_path in zips:
         # Skip the destination if it lives inside the source folder.
@@ -303,6 +358,7 @@ def run(args: argparse.Namespace) -> int:
             continue
 
         name = zip_path.stem
+        name_to_path[name] = zip_path
 
         if name in chd_set and not args.include_chd:
             chd_skipped += 1
@@ -319,13 +375,27 @@ def run(args: argparse.Namespace) -> int:
             sub = chd_subfolder_for(source, name)
             if sub is not None:
                 copy_chd_folder(sub, dest)
+        kept.add(name)
         copied += 1
+
+    # Split sets: each kept clone needs its parent zip present to run, even if
+    # the parent matches an excluded category. Pull those parents in.
+    parents_pulled = 0
+    if set_type == SET_TYPE_SPLIT:
+        for parent in sorted(parent_closure(kept, clone_map)):
+            parent_path = name_to_path.get(parent)
+            if parent_path is None:
+                continue  # parent zip not in source (unexpected for a split set)
+            if copy_zip(parent_path, dest):
+                parents_pulled += 1
 
     if chd_skipped:
         excluded_counts[CATEGORY_CHD] = chd_skipped
 
     elapsed = time.perf_counter() - start
     _print_summary(len(zips), copied, excluded_counts, dest, elapsed)
+    if parents_pulled:
+        print(f"Pulled {parents_pulled} parent zip(s) for split-set clones.")
     if FAILED_COPIES:
         print()
         print(f"Failed to copy {len(FAILED_COPIES)} file(s):")

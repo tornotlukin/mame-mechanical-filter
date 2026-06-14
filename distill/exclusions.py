@@ -24,19 +24,19 @@ from config import (
     CATEGORY_CHD,
     CATEGORY_COMPUTER,
     CATEGORY_CONSOLE,
+    CATEGORY_DEVICE,
     CATEGORY_FRUIT,
     CATEGORY_GAMBLING,
     CATEGORY_MECHANICAL,
     CATEGORY_NAOMI,
-    CATEGORY_NONRUNNABLE,
     CATEGORY_TOUCH,
     CATVER_FILENAME,
     CHD_TXT,
     CHD_XML,
+    DEVICE_XML,
     LISTS_DIR,
     MECHANICAL_XML,
     NAOMI_XML,
-    NONRUNNABLE_XML,
     TOUCH_XML,
 )
 from copier import filesystem_chd_names
@@ -56,26 +56,32 @@ def build_exclusion_sets(source: Path) -> dict[str, set[str]]:
 
     xml_mech = load_machine_names_xml(LISTS_DIR / MECHANICAL_XML)
     xml_touch = load_machine_names_xml(LISTS_DIR / TOUCH_XML)
-    xml_nonrun = load_machine_names_xml(LISTS_DIR / NONRUNNABLE_XML)
     xml_naomi = load_machine_names_xml(LISTS_DIR / NAOMI_XML)
     xml_chd = load_machine_names_xml(LISTS_DIR / CHD_XML)
     txt_chd = load_machine_names_txt(LISTS_DIR / CHD_TXT)
     fs_chd = filesystem_chd_names(source) if source.is_dir() else set()
 
     xml_bios = load_machine_names_xml(LISTS_DIR / BIOS_XML)
+    xml_device = load_machine_names_xml(LISTS_DIR / DEVICE_XML)
 
     return {
         CATEGORY_MECHANICAL: xml_mech | electromechanical_names(catver),
         CATEGORY_FRUIT: fruit_names(catver),
         CATEGORY_GAMBLING: casino_names(catver),
         CATEGORY_TOUCH: xml_touch,
-        CATEGORY_NONRUNNABLE: xml_nonrun,
         CATEGORY_NAOMI: xml_naomi,
         CATEGORY_CHD: xml_chd | txt_chd | fs_chd,
         CATEGORY_COMPUTER: computer_names(catver),
         CATEGORY_CONSOLE: console_names(catver),
         CATEGORY_BIOS: xml_bios,
+        CATEGORY_DEVICE: xml_device,
     }
+
+
+# Categories whose members are always preserved (copied) unless the matching
+# category is explicitly activated via --exclude-bios / --exclude-devices.
+# Games reference these external zips, so dropping them breaks the games.
+PRESERVATION_CATEGORIES: tuple[str, ...] = (CATEGORY_BIOS, CATEGORY_DEVICE)
 
 
 def classify(
@@ -83,17 +89,22 @@ def classify(
 ) -> str | None:
     """Return the first active category that contains `name`, else None.
 
-    BIOSes are preserved: if `name` is in the BIOS set and CATEGORY_BIOS is
-    not active (i.e. `--exclude-bios` was not passed), the ROM passes through
-    even when it also matches another active exclusion category.
+    Preservation: if `name` belongs to a preservation category (BIOS or
+    device) and that category is not active (i.e. the corresponding
+    --exclude-* flag was not passed), the ROM passes through even when it
+    also matches another active exclusion category. This keeps the external
+    dependency zips that games rely on (e.g. qsound is flagged nonrunnable
+    but every CPS-2 game needs it).
 
     Iteration order is the active-categories set order — for tally purposes
     we want a stable category attribution; the caller passes a list to control
     priority.
     """
-    bios_set = exclusion_sets.get(CATEGORY_BIOS, set())
-    if name in bios_set and CATEGORY_BIOS not in active_categories:
-        return None
+    for preserve in PRESERVATION_CATEGORIES:
+        if preserve in active_categories:
+            continue
+        if name in exclusion_sets.get(preserve, set()):
+            return None
     for cat in active_categories:
         if name in exclusion_sets.get(cat, set()):
             return cat

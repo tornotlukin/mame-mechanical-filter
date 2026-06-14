@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <machines>
-  <machines>
     <machine name="18w"/>
     <machine name="18w2"/>
     <machine name="24_130"/>
@@ -330,6 +329,7 @@
     <machine name="badgirlsa"/>
     <machine name="badgirlsf"/>
     <machine name="badgirlsg"/>
+    <machine name="bahia"/>
     <machine name="barbwire"/>
     <machine name="barra_l1"/>
     <machine name="basket"/>
@@ -337,6 +337,7 @@
     <machine name="batmanf1"/>
     <machine name="batmanf2"/>
     <machine name="batmanf3"/>
+    <machine name="battkids"/>
     <machine name="bay_d300"/>
     <machine name="bay_d400"/>
     <machine name="bay_e400"/>
@@ -408,8 +409,10 @@
     <machine name="bighousef"/>
     <machine name="bighouseg"/>
     <machine name="bighurt"/>
+    <machine name="bigjkpot"/>
     <machine name="bigtown"/>
     <machine name="bigtrak"/>
+    <machine name="bigwinnr"/>
     <machine name="bikerace"/>
     <machine name="bikerace2"/>
     <machine name="bk2k_l4"/>
@@ -540,6 +543,7 @@
     <machine name="cc_104"/>
     <machine name="cc_12"/>
     <machine name="cc_13"/>
+    <machine name="cchampion"/>
     <machine name="ccorsario"/>
     <machine name="ccorsarioa"/>
     <machine name="ccruise"/>
@@ -553,6 +557,7 @@
     <machine name="cftbl_l3"/>
     <machine name="cftbl_l4"/>
     <machine name="cgang"/>
+    <machine name="cgunman"/>
     <machine name="champion"/>
     <machine name="chance"/>
     <machine name="charles"/>
@@ -611,6 +616,7 @@
     <machine name="cptlucky"/>
     <machine name="cpzodiac"/>
     <machine name="cpzodiacj"/>
+    <machine name="crankyc"/>
     <machine name="cricket"/>
     <machine name="crossmg2"/>
     <machine name="crsauruss"/>
@@ -649,6 +655,7 @@
     <machine name="dakar"/>
     <machine name="dalejr"/>
     <machine name="dangbar"/>
+    <machine name="daolang"/>
     <machine name="dardos"/>
     <machine name="darkshad"/>
     <machine name="dd_l2"/>
@@ -662,8 +669,8 @@
     <machine name="dh_lf2"/>
     <machine name="dh_lx2"/>
     <machine name="diaelite"/>
-    <machine name="diamondking"/>
-    <machine name="diamondkinp"/>
+    <machine name="diamondk"/>
+    <machine name="diamondko"/>
     <machine name="diamondp"/>
     <machine name="diamondpf"/>
     <machine name="diamondpg"/>
@@ -683,9 +690,19 @@
     <machine name="dinoeggs"/>
     <machine name="diola827"/>
     <machine name="diolakoa"/>
+    <machine name="disc"/>
+    <machine name="disc2000"/>
+    <machine name="disc2001"/>
+    <machine name="disc3000"/>
+    <machine name="disc4000"/>
+    <machine name="discfun"/>
+    <machine name="disciip"/>
     <machine name="disco79"/>
     <machine name="disco_l1"/>
     <machine name="discodan"/>
+    <machine name="discoly"/>
+    <machine name="discryl"/>
+    <machine name="discrylb"/>
     <machine name="dm_h5"/>
     <machine name="dm_h6"/>
     <machine name="dm_la1"/>
@@ -698,6 +715,9 @@
     <machine name="dollyptn"/>
     <machine name="domino2"/>
     <machine name="donpepito"/>
+    <machine name="dpplpot"/>
+    <machine name="dpplson"/>
+    <machine name="dpplstrt"/>
     <machine name="drac_l1"/>
     <machine name="drac_p11"/>
     <machine name="dracula"/>
@@ -707,6 +727,8 @@
     <machine name="draillov"/>
     <machine name="drakor"/>
     <machine name="drdmania"/>
+    <machine name="dscbonus"/>
+    <machine name="dscjkpot"/>
     <machine name="dumpump"/>
     <machine name="dungdrag"/>
     <machine name="dvlrider"/>
@@ -1212,6 +1234,7 @@
     <machine name="eldorado"/>
     <machine name="elecbowl"/>
     <machine name="elektra"/>
+    <machine name="elitdisc"/>
     <machine name="elvisf"/>
     <machine name="elvisf302"/>
     <machine name="elvisf303"/>
@@ -2043,7 +2066,8 @@
     <machine name="excalibr"/>
     <machine name="excalibrf"/>
     <machine name="excalibrg"/>
-    <machine name="extrablatt"/>
+    <machine name="excellnt"/>
+    <machine name="extrbltt"/>
     <machine name="f14_l1"/>
     <machine name="f14_p3"/>
     <machine name="f14_p4"/>
@@ -2112,6 +2136,7 @@
     <machine name="flashgdnp1"/>
     <machine name="flashgdnp2"/>
     <machine name="flashgdnv"/>
+    <machine name="flashgun"/>
     <machine name="flashman"/>
     <machine name="fldragon"/>
     <machine name="fldragona"/>
@@ -2149,7 +2174,11 @@
     <machine name="ft_l5"/>
     <machine name="ft_p2"/>
     <machine name="ft_p4"/>
+    <machine name="fullhous"/>
     <machine name="funeball"/>
+    <machine name="futbol"/>
+    <machine name="futbola"/>
+    <machine name="futbolt"/>
     <machine name="futrquen"/>
     <machine name="futurspa"/>
     <machine name="futurwld"/>
@@ -2172,6 +2201,7 @@
     <machine name="gi_l6"/>
     <machine name="gi_l8"/>
     <machine name="gi_l9"/>
+    <machine name="gjubil"/>
     <machine name="gl_coc"/>
     <machine name="gl_coc29"/>
     <machine name="gl_coc29p"/>
@@ -2198,7 +2228,7 @@
     <machine name="gladiatp"/>
     <machine name="gldneye"/>
     <machine name="gldneye_402"/>
-    <machine name="glucksstern"/>
+    <machine name="glksstrn"/>
     <machine name="glxplay"/>
     <machine name="glxplay2"/>
     <machine name="gmine_l2"/>
@@ -2214,16 +2244,17 @@
     <machine name="goldball"/>
     <machine name="goldballn"/>
     <machine name="goldcue"/>
-    <machine name="goldenchip"/>
     <machine name="goldfrts"/>
     <machine name="goldgame"/>
     <machine name="goldgkit1"/>
     <machine name="goldgkitb"/>
     <machine name="goldgnew"/>
     <machine name="goldgstake"/>
+    <machine name="goldnchp"/>
     <machine name="goldwing"/>
     <machine name="goldwingf"/>
     <machine name="goldwingg"/>
+    <machine name="gongfuxm"/>
     <machine name="gork"/>
     <machine name="gprix"/>
     <machine name="gprix_301"/>
@@ -2259,12 +2290,14 @@
     <machine name="grand_l1"/>
     <machine name="grand_l3"/>
     <machine name="grand_l4"/>
-    <machine name="grandhand"/>
+    <machine name="grandhnd"/>
+    <machine name="grandmas"/>
     <machine name="granny"/>
     <machine name="granslam"/>
     <machine name="granslam4"/>
     <machine name="grgar_l1"/>
     <machine name="grgar_t1"/>
+    <machine name="grnada"/>
     <machine name="gs_la3"/>
     <machine name="gs_lg6"/>
     <machine name="gs_lu3"/>
@@ -2416,6 +2449,9 @@
     <machine name="heavymtl"/>
     <machine name="hercules"/>
     <machine name="heromem"/>
+    <machine name="herzas"/>
+    <machine name="herzasf1"/>
+    <machine name="herzasf8"/>
     <machine name="hexagone"/>
     <machine name="hexaprs"/>
     <machine name="hexaprsz"/>
@@ -3915,6 +3951,7 @@
     <machine name="j_supsha"/>
     <machine name="j_ts"/>
     <machine name="jack2opn"/>
+    <machine name="jack4000"/>
     <machine name="jackbean"/>
     <machine name="jackuse"/>
     <machine name="jamesb"/>
@@ -3927,9 +3964,12 @@
     <machine name="jd_l5"/>
     <machine name="jd_l6"/>
     <machine name="jd_l7"/>
+    <machine name="jkrpoker"/>
     <machine name="jm_05r"/>
     <machine name="jm_12b"/>
     <machine name="jm_12r"/>
+    <machine name="jmbojmbf"/>
+    <machine name="jmbojmbo"/>
     <machine name="jngld_l1"/>
     <machine name="jngld_l2"/>
     <machine name="jokrpokr"/>
@@ -3942,6 +3982,8 @@
     <machine name="jplstw22"/>
     <machine name="jst_l1"/>
     <machine name="jst_l2"/>
+    <machine name="jumbo400"/>
+    <machine name="jumboa"/>
     <machine name="jupk_305"/>
     <machine name="jupk_307"/>
     <machine name="jupk_501"/>
@@ -3963,7 +4005,9 @@
     <machine name="kissp2"/>
     <machine name="kkcount"/>
     <machine name="kkongltd"/>
-    <machine name="kleopatra"/>
+    <machine name="kleoptra"/>
+    <machine name="kniffi"/>
+    <machine name="kometf1"/>
     <machine name="kopunch"/>
     <machine name="kosteel"/>
     <machine name="kpv106"/>
@@ -3983,6 +4027,7 @@
     <machine name="lah_112"/>
     <machine name="lah_xxx_s105"/>
     <machine name="lancelot"/>
+    <machine name="lanmao"/>
     <machine name="lapbylap"/>
     <machine name="larana"/>
     <machine name="larana2"/>
@@ -3998,6 +4043,7 @@
     <machine name="leking"/>
     <machine name="lightnin"/>
     <machine name="lizard"/>
+    <machine name="ljian"/>
     <machine name="locomotp"/>
     <machine name="lortium"/>
     <machine name="lostspc"/>
@@ -4068,6 +4114,7 @@
     <machine name="lzbal_l2"/>
     <machine name="lzbal_l2sp"/>
     <machine name="lzbal_t2"/>
+    <machine name="lzhudie"/>
     <machine name="m1albsq"/>
     <machine name="m1albsq1"/>
     <machine name="m1albsq1p"/>
@@ -4956,6 +5003,7 @@
     <machine name="m1ppca"/>
     <machine name="m1ppcb"/>
     <machine name="m1ppdt"/>
+    <machine name="m1ppdta"/>
     <machine name="m1przclu"/>
     <machine name="m1przclua"/>
     <machine name="m1przclub"/>
@@ -5158,6 +5206,7 @@
     <machine name="m1wotw"/>
     <machine name="m1wotwa"/>
     <machine name="m1wotwb"/>
+    <machine name="m21point"/>
     <machine name="m2comet"/>
     <machine name="m2frpoly"/>
     <machine name="m2hilite"/>
@@ -5254,6 +5303,7 @@
     <machine name="m3xchngua"/>
     <machine name="m421"/>
     <machine name="m421club"/>
+    <machine name="m421clubg"/>
     <machine name="m42punlm"/>
     <machine name="m4aao"/>
     <machine name="m4abeaut"/>
@@ -6499,6 +6549,7 @@
     <machine name="m4ceptr"/>
     <machine name="m4cfinln"/>
     <machine name="m4cfinln__a"/>
+    <machine name="m4cfinln__b"/>
     <machine name="m4chacec"/>
     <machine name="m4chaceca"/>
     <machine name="m4chacef"/>
@@ -6514,6 +6565,7 @@
     <machine name="m4chaseig"/>
     <machine name="m4cheryo"/>
     <machine name="m4cjdlx"/>
+    <machine name="m4cjdlxb"/>
     <machine name="m4clab"/>
     <machine name="m4clab__a"/>
     <machine name="m4clab__b"/>
@@ -9590,6 +9642,7 @@
     <machine name="m4rockmn__k"/>
     <machine name="m4rotex"/>
     <machine name="m4royjwl"/>
+    <machine name="m4rrun"/>
     <machine name="m4rsg"/>
     <machine name="m4rsga"/>
     <machine name="m4runawy"/>
@@ -11485,6 +11538,7 @@
     <machine name="m_mtchup"/>
     <machine name="mac_1808"/>
     <machine name="mac_zois"/>
+    <machine name="macao"/>
     <machine name="macattck"/>
     <machine name="macgalxy"/>
     <machine name="macgalxyb"/>
@@ -11499,28 +11553,35 @@
     <machine name="marsp"/>
     <machine name="marspf"/>
     <machine name="marspp"/>
+    <machine name="mas"/>
     <machine name="mastcrane"/>
     <machine name="mastcranea"/>
     <machine name="mastcraneb"/>
+    <machine name="mastro"/>
     <machine name="matahari"/>
     <machine name="mav_100"/>
     <machine name="mav_200"/>
     <machine name="mav_400"/>
     <machine name="mav_401"/>
     <machine name="mav_402"/>
+    <machine name="mav_404g"/>
     <machine name="mb_10"/>
     <machine name="mb_106"/>
     <machine name="mb_106b"/>
     <machine name="mbdtower"/>
+    <machine name="mbistro"/>
     <machine name="mbossy"/>
     <machine name="mcastle"/>
     <machine name="mcastlef"/>
     <machine name="mcastleg"/>
     <machine name="mcastlei"/>
+    <machine name="mclub"/>
     <machine name="mdntmrdr"/>
+    <machine name="mdouble"/>
     <machine name="medusa"/>
     <machine name="megaaton"/>
     <machine name="megaatona"/>
+    <machine name="megacrane"/>
     <machine name="memlane"/>
     <machine name="mephistp"/>
     <machine name="mephistp1"/>
@@ -11543,6 +11604,7 @@
     <machine name="mideartha"/>
     <machine name="milln_l3"/>
     <machine name="miniazard"/>
+    <machine name="minibar"/>
     <machine name="minidart"/>
     <machine name="miniguay"/>
     <machine name="minihockey"/>
@@ -11561,6 +11623,7 @@
     <machine name="mm_109b"/>
     <machine name="mm_109c"/>
     <machine name="mm_10u"/>
+    <machine name="mmax"/>
     <machine name="mmm_ldip"/>
     <machine name="mmmaster"/>
     <machine name="mnfb_c27"/>
@@ -11570,6 +11633,7 @@
     <machine name="mntecrloa"/>
     <machine name="mntecrlof"/>
     <machine name="mntecrlog"/>
+    <machine name="moneyf1"/>
     <machine name="mononew"/>
     <machine name="monop233"/>
     <machine name="monop251"/>
@@ -11597,17 +11661,22 @@
     <machine name="mrblack"/>
     <machine name="mrblack1"/>
     <machine name="mrblkz80"/>
+    <machine name="msaiche"/>
     <machine name="msbamby"/>
     <machine name="msdisco"/>
+    <machine name="mtrio"/>
     <machine name="mueve"/>
     <machine name="multibaby"/>
-    <machine name="multimulti"/>
+    <machine name="multmult"/>
+    <machine name="multprim"/>
+    <machine name="multstar"/>
     <machine name="multy"/>
     <machine name="mundial"/>
     <machine name="mystcast"/>
     <machine name="mystcasta"/>
     <machine name="mysteria"/>
     <machine name="mystic"/>
+    <machine name="mystjack"/>
     <machine name="myststar"/>
     <machine name="nascar"/>
     <machine name="nascar_301"/>
@@ -11668,6 +11737,7 @@
     <machine name="nstrphnxf"/>
     <machine name="nudgeit"/>
     <machine name="nugent"/>
+    <machine name="nunran"/>
     <machine name="obaoba"/>
     <machine name="obaoba1"/>
     <machine name="obaobao"/>
@@ -11686,6 +11756,7 @@
     <machine name="opthund"/>
     <machine name="orbit1"/>
     <machine name="orbitor1"/>
+    <machine name="panda2"/>
     <machine name="pandart"/>
     <machine name="panthera"/>
     <machine name="papillon"/>
@@ -11728,7 +11799,10 @@
     <machine name="pinmoonl"/>
     <machine name="pinpool"/>
     <machine name="pitchhit"/>
+    <machine name="pitchtry"/>
     <machine name="pkrno_l1"/>
+    <machine name="pkzw"/>
+    <machine name="pl6_atw"/>
     <machine name="pl6_kfp"/>
     <machine name="pl6_lgk"/>
     <machine name="play_a24"/>
@@ -11765,6 +11839,7 @@
     <machine name="playboys_401"/>
     <machine name="playnew"/>
     <machine name="pldoraemon"/>
+    <machine name="pllovegene"/>
     <machine name="plpittashi"/>
     <machine name="pmv112"/>
     <machine name="pmv112r"/>
@@ -11775,6 +11850,9 @@
     <machine name="polic_l2"/>
     <machine name="polic_l3"/>
     <machine name="polic_l4"/>
+    <machine name="polstar2"/>
+    <machine name="polstrfi"/>
+    <machine name="polstrmf"/>
     <machine name="pomp_l1"/>
     <machine name="pool_l5"/>
     <machine name="pool_l6"/>
@@ -11966,6 +12044,7 @@
     <machine name="pz_l2"/>
     <machine name="pz_l3"/>
     <machine name="qbquest"/>
+    <machine name="qiandd"/>
     <machine name="qncrash"/>
     <machine name="qncrasha"/>
     <machine name="quicksil"/>
@@ -11987,6 +12066,7 @@
     <machine name="r_swash"/>
     <machine name="r_torneo"/>
     <machine name="rab_103s"/>
+    <machine name="rab_110be"/>
     <machine name="rab_130"/>
     <machine name="rab_320"/>
     <machine name="rackempp"/>
@@ -11997,6 +12077,7 @@
     <machine name="rally"/>
     <machine name="rallypnt2"/>
     <machine name="rapidfip"/>
+    <machine name="rasant"/>
     <machine name="ratrc_l1"/>
     <machine name="raven"/>
     <machine name="ravena"/>
@@ -12100,6 +12181,7 @@
     <machine name="rollr_l3"/>
     <machine name="rollr_p2"/>
     <machine name="rollston"/>
+    <machine name="rollstonv17"/>
     <machine name="rota_101"/>
     <machine name="rota_115"/>
     <machine name="rotation"/>
@@ -14499,7 +14581,23 @@
     <machine name="scrpn_t1"/>
     <machine name="scrpndx"/>
     <machine name="scrzy_l1"/>
+    <machine name="scxam"/>
+    <machine name="scxen"/>
+    <machine name="scxena"/>
+    <machine name="scxfr"/>
+    <machine name="scxfra"/>
+    <machine name="scxgr"/>
+    <machine name="scxit"/>
+    <machine name="scxita"/>
+    <machine name="scxpt"/>
+    <machine name="scxsp"/>
+    <machine name="scxspa"/>
+    <machine name="scxspb"/>
+    <machine name="scxspc"/>
+    <machine name="scxspd"/>
+    <machine name="scxus"/>
     <machine name="seawitch"/>
+    <machine name="sesam"/>
     <machine name="sevilla"/>
     <machine name="sevillaa"/>
     <machine name="sevillab"/>
@@ -14515,6 +14613,7 @@
     <machine name="shaqattq2"/>
     <machine name="shark"/>
     <machine name="sharkt"/>
+    <machine name="sherzas"/>
     <machine name="shfin_l1"/>
     <machine name="shock"/>
     <machine name="shrknew"/>
@@ -14526,6 +14625,7 @@
     <machine name="shrkyit"/>
     <machine name="shrkyit_207"/>
     <machine name="shrkysht"/>
+    <machine name="silvrush"/>
     <machine name="silvslug"/>
     <machine name="simp_a20"/>
     <machine name="simp_a27"/>
@@ -14550,6 +14650,8 @@
     <machine name="simpprty_400"/>
     <machine name="sinbad"/>
     <machine name="sinbadn"/>
+    <machine name="sirekids"/>
+    <machine name="sjackpot"/>
     <machine name="skatebll"/>
     <machine name="skatebrd"/>
     <machine name="skc_090"/>
@@ -15158,6 +15260,7 @@
     <machine name="spacejmf"/>
     <machine name="spacejmg"/>
     <machine name="spacejmi"/>
+    <machine name="spadarts"/>
     <machine name="spain82"/>
     <machine name="spcgambl"/>
     <machine name="spcpnthr"/>
@@ -15191,9 +15294,15 @@
     <machine name="sprk_090"/>
     <machine name="sprk_096"/>
     <machine name="sprk_103"/>
+    <machine name="sprmlti"/>
+    <machine name="sprmltib"/>
     <machine name="sprtdart"/>
     <machine name="spstn_l5"/>
     <machine name="spyhuntr"/>
+    <machine name="sralslot"/>
+    <machine name="sralslota"/>
+    <machine name="sralslotb"/>
+    <machine name="sralslotc"/>
     <machine name="srockbwl"/>
     <machine name="ss_01"/>
     <machine name="ss_03"/>
@@ -15238,6 +15347,7 @@
     <machine name="startrip"/>
     <machine name="startrp"/>
     <machine name="startrp2"/>
+    <machine name="stbasket"/>
     <machine name="stest"/>
     <machine name="stingray"/>
     <machine name="stk_sprs"/>
@@ -15289,8 +15399,9 @@
     <machine name="sunny"/>
     <machine name="superdix"/>
     <machine name="supermap"/>
-    <machine name="supermultib"/>
+    <machine name="superpro"/>
     <machine name="suprbowl"/>
+    <machine name="suprdisc"/>
     <machine name="suprnova"/>
     <machine name="suprpick"/>
     <machine name="supstarf"/>
@@ -15387,7 +15498,9 @@
     <machine name="thund_p1"/>
     <machine name="thund_p2"/>
     <machine name="thund_p3"/>
+    <machine name="thunderv"/>
     <machine name="tigerrag"/>
+    <machine name="tijkpots"/>
     <machine name="time2000"/>
     <machine name="timeline"/>
     <machine name="titan"/>
@@ -15503,17 +15616,22 @@
     <machine name="tz_p3"/>
     <machine name="tz_p4"/>
     <machine name="tz_pa1"/>
+    <machine name="tzwang"/>
     <machine name="uboat65"/>
     <machine name="ufo21"/>
     <machine name="ufo7"/>
+    <machine name="ufo7a"/>
+    <machine name="ufo7b"/>
     <machine name="ufo800"/>
     <machine name="ufo_x"/>
     <machine name="ufoalac"/>
     <machine name="ufomini"/>
+    <machine name="ultracl3"/>
     <machine name="unk820501"/>
     <machine name="unk960606"/>
     <machine name="unk960606b"/>
     <machine name="unkbubsc"/>
+    <machine name="unkcrane"/>
     <machine name="unkgolf"/>
     <machine name="unkhockey"/>
     <machine name="unkhpslt"/>
@@ -15521,10 +15639,13 @@
     <machine name="usafootba"/>
     <machine name="usafootf"/>
     <machine name="v1"/>
+    <machine name="v4assef1"/>
+    <machine name="v4assef2"/>
     <machine name="vector"/>
     <machine name="vegas"/>
     <machine name="vegasgp"/>
     <machine name="vegast"/>
+    <machine name="versus"/>
     <machine name="victoryp"/>
     <machine name="victorypf"/>
     <machine name="victorypg"/>
@@ -15537,6 +15658,7 @@
     <machine name="vlcno_1b"/>
     <machine name="vlcno_1c"/>
     <machine name="vlcno_ax"/>
+    <machine name="vmulti"/>
     <machine name="vngrdmk1"/>
     <machine name="voleybal"/>
     <machine name="voltan"/>
@@ -15571,6 +15693,8 @@
     <machine name="whirl_lg2"/>
     <machine name="whirl_lg3"/>
     <machine name="whtforce"/>
+    <machine name="whujiang"/>
+    <machine name="whujijqb"/>
     <machine name="wildfyre"/>
     <machine name="wipeout"/>
     <machine name="wipeout2a"/>
@@ -15667,6 +15791,7 @@
     <machine name="xfilesp"/>
     <machine name="xfilespf"/>
     <machine name="xforce"/>
+    <machine name="xqingwa"/>
     <machine name="xsandos"/>
     <machine name="zankor"/>
     <machine name="zankor2i"/>
@@ -15676,5 +15801,4 @@
     <machine name="zephy"/>
     <machine name="zephya"/>
     <machine name="zira"/>
-  </machines>
 </machines>
